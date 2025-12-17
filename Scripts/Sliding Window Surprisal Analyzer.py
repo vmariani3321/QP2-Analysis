@@ -41,7 +41,7 @@ SPACY_BATCH = 64
 OVERWRITE = 0
 
 INPUT_DIR = "D:/BNC Full Data/BNCFiles/Full BNC1994/download/Texts" # The directory of the input XML files
-OUTPUT_DIR = "D:/BNC Full Data/12-12_3PM Run - Copy/CSV" # The directory of the output CSV files
+OUTPUT_DIR = "D:/BNC Full Data/12-17 Run/CSV" # The directory of the output CSV files
 
 SPACY_MOD = "en_core_web_trf" # The SpaCy model to use
 TRANSFORMER_MOD = "meta-llama/Llama-3.2-1B" # The transformer model to use
@@ -196,40 +196,45 @@ def XML_tupler(filepath):
     except ET.ParseError as e: # Sanity check for invalid XML
         print(f" Parse error {e}. Skipping file.")
         return []
+    
+    if root.find(".//wtext") is not None:
+        modality = "written"
+    elif root.findall (".//stext"):
+        modality = "spoken"
+    else:
+        modality = "unknown"
 
-    for modality, tag_type in [("written", ".//p"), ("spoken", ".//u")]: # Filters for written modality. Add ("spoken", ".//u") to also get spoken
-            for element in root.findall(tag_type):
-                for sentence_tag in element.findall(".//s"): # Extracts sentences
-                    words = [
-                        child.text.strip() # Removes extra spaces
-                        for child in sentence_tag
-                        if child.tag in ['w', 'c'] and child.text is not None # Removes empty words
-                    ]
-                    
-                    if words:
-                        sentence_text = ' '.join(words).strip() # Joins words into a sentence with only one space between words and removes empty sentences
-                        sentence_counter += 1
+    for sentence_tag in root.findall(".//s"): # Extracts sentences
+        words = [
+            child.text.strip() # Removes extra spaces
+            for child in sentence_tag
+            if child.tag in ['w', 'c'] and child.text is not None # Removes empty words
+        ]
+        
+        if words:
+            sentence_text = ' '.join(words).strip() # Joins words into a sentence with only one space between words and removes empty sentences
+            sentence_counter += 1
 
-                        s_n = sentence_tag.get('n') # Get sentence number from XML
+            s_n = sentence_tag.get('n') # Get sentence number from XML
 
-                        if s_n:
-                            if s_n.isdigit():
-                                sent_num = f"{int(s_n):04d}"
-                            else:
-                                sent_num = s_n
-                        else: 
-                            sent_num = "xxxx"
+            if s_n:
+                if s_n.isdigit():
+                    sent_num = f"{int(s_n):04d}"
+                else:
+                    sent_num = s_n
+            else: 
+                sent_num = "xxxx"
 
-                        BNCID = f"{filename_no_ext}_{sent_num}"  # BNCID = BNC ID number, used for citations
-                        consecutive_ID = f"{filename_no_ext}_{sentence_counter}" # Used in case BNC ID is not proper, mainly for sorting in R
+            BNCID = f"{filename_no_ext}_{sent_num}"  # BNCID = BNC ID number, used for citations
+            consecutive_ID = f"{filename_no_ext}_{sentence_counter:04d}" # Used in case BNC ID is not proper, mainly for sorting in R
 
-                        metadata = {
-                            "BNC_ID" : BNCID,
-                            "consecutive_ID" : consecutive_ID,
-                            "filename" : base_filename,
-                            "modality" : modality
-                        }
-                        sentence_tuples.append((sentence_text, metadata))
+            metadata = {
+                "BNC_ID" : BNCID,
+                "consecutive_ID" : consecutive_ID,
+                "filename" : base_filename,
+                "modality" : modality
+            }
+            sentence_tuples.append((sentence_text, metadata))
 
     return sentence_tuples
 
@@ -465,7 +470,7 @@ def generate_rows(doc, token_surprisals):
     transitive = dir_obj_count > 0
 
     sentence_metadata = {
-        "bnc_id" : doc._sentence_metadata["BNC_ID"],
+        "bnc_id" : doc._.sentence_metadata["BNC_ID"],
         "consecutive_id ": doc._.sentence_metadata["consecutive_ID"],
         "filename": doc._.sentence_metadata["filename"],
         "modality": doc._.sentence_metadata["modality"],
