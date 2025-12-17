@@ -197,7 +197,7 @@ def XML_tupler(filepath):
         print(f" Parse error {e}. Skipping file.")
         return []
 
-    for modality, tag_type in [("written", ".//p")]: # Filters for written modality. Add ("spoken", ".//u") to also get spoken
+    for modality, tag_type in [("written", ".//p"), ("spoken", ".//u")]: # Filters for written modality. Add ("spoken", ".//u") to also get spoken
             for element in root.findall(tag_type):
                 for sentence_tag in element.findall(".//s"): # Extracts sentences
                     words = [
@@ -208,11 +208,24 @@ def XML_tupler(filepath):
                     
                     if words:
                         sentence_text = ' '.join(words).strip() # Joins words into a sentence with only one space between words and removes empty sentences
-                        sentence_counter += 1 
-                        FSID = f"{filename_no_ext}_{sentence_counter:04d}"  # FSID = File Sentence ID, with leading zeroes
+                        sentence_counter += 1
+
+                        s_n = sentence_tag.get('n') # Get sentence number from XML
+
+                        if s_n:
+                            if s_n.isdigit():
+                                sent_num = f"{int(s_n):04d}"
+                            else:
+                                sent_num = s_n
+                        else: 
+                            sent_num = "xxxx"
+
+                        BNCID = f"{filename_no_ext}_{sent_num}"  # BNCID = BNC ID number, used for citations
+                        consecutive_ID = f"{filename_no_ext}_{sentence_counter}" # Used in case BNC ID is not proper, mainly for sorting in R
 
                         metadata = {
-                            "FSID" : FSID,
+                            "BNC_ID" : BNCID,
+                            "consecutive_ID" : consecutive_ID,
                             "filename" : base_filename,
                             "modality" : modality
                         }
@@ -452,24 +465,25 @@ def generate_rows(doc, token_surprisals):
     transitive = dir_obj_count > 0
 
     sentence_metadata = {
-        "Sentence_ID ": doc._.sentence_metadata["FSID"],
-        "Filename": doc._.sentence_metadata["filename"],
-        "Modality": doc._.sentence_metadata["modality"],
-        "Sentence_Text": doc.text,
-        "Sent_Verb_Count": verb_count,
-        "Sent_Auxiliary_Count": aux_count,
-        "Sent_Subject_Count": subject_count,
-        'Sent_Tot_Obj_Count': total_obj_count,
-        'Sent_Dir_Object_Count': dir_obj_count,
-        'Sent_Ind_Object_Count': ind_obj_count,
-        "Sent_Transitive": transitive,
-        "Sent_Comma_Count": commas,
-        "Sent_Sub_Conj_Count": sub_conj_count,
-        'Sent_Coord_Conj_Count': coord_conj_count,
-        "Sent_Relative_Clause_Count": relative_clause_count,
-        "Sent_Adv_Clause_Count": adv_clause_count,
-        "Clausal_Complement_Count": clausal_comp_count,
-        "Sent_Prep_Phrase_Count": prep_phrase_count
+        "bnc_id" : doc._sentence_metadata["BNC_ID"],
+        "consecutive_id ": doc._.sentence_metadata["consecutive_ID"],
+        "filename": doc._.sentence_metadata["filename"],
+        "modality": doc._.sentence_metadata["modality"],
+        "s_text": doc.text,
+        "s_verb_cnt": verb_count,
+        "s_aux_cnt": aux_count,
+        "s_aux_cnt": subject_count,
+        's_tot_obj_cnt': total_obj_count,
+        's_dir_obj_cnt': dir_obj_count,
+        's_ind_obj_cnt': ind_obj_count,
+        "s_trans": transitive,
+        "s_comma_cnt": commas,
+        "s_sub_conj_cnt": sub_conj_count,
+        's_coord_conj_cnt': coord_conj_count,
+        "s_rel_clause_cnt": relative_clause_count,
+        "s_adv_clause_cnt": adv_clause_count,
+        "clausal_comp_cnt": clausal_comp_count,
+        "s_pp_cnt": prep_phrase_count
     }
 
 
@@ -480,23 +494,21 @@ def generate_rows(doc, token_surprisals):
         individual_surprisal = token_surprisals.get(token.i)
         base_row = {
             **sentence_metadata,
-            'Word_Token_Index' : token.i,
-            'Word_Token' : token.text,
-            'Phrase_Token' : token.text,
-            'Phrase_Surprisal' : individual_surprisal,#Gets overrwritten by NPs
-            'Word_Surprisal' : individual_surprisal, 
-            'Word_Lemma' : token.lemma_,
-            'Word_POS' : token.pos_,
-            'Word_Dependency' : token.dep_,
-            'Is_NP' : False,
-            'NP_Is_Bare_NP' : None,
-            'NP_Structure' : None, 
-            'NP_Head_Lemma' : None, 'NP_Det_Lemma' : None,
-            'NP_Head_POS' : None, 'NP_Det_POS' : None,
-            'NP_Head_Dependency' : None, 'NP_Det_Dependency' : None,
-            'NP_Head_Text' : None, 'NP_Det_Text' : None,
-            'NP_Sum_Surprisal' : None, 'NP_Mean_Surprisal' : None, 
-            'NP_Argument' : None, 'NP_Number' : None, 'NP_Definiteness' : None,
+            'w_idx' : token.i,
+            'w_tok' : token.text,
+            'phr_tok' : token.text,
+            'surprisal' : individual_surprisal,#Gets overrwritten by NPs
+            'w_surp' : individual_surprisal, 
+            'w_pos' : token.pos_,
+            'w_dep' : token.dep_,
+            'is_noun' : False,
+            'is_bare_np' : None,
+            'np_struct' : None, 
+            'head_pos' : None, 'det_pos' : None,
+            'head_dep' : None, 'det_dep' : None,
+            'head_text' : None, 'det_text' : None,
+            'np_sum_surp' : None, 'np_mean_surp' : None, 
+            'argPos' : None, 'np_num' : None, 'definiteness' : None,
         }
         token_rows.append(base_row)
 
@@ -510,26 +522,26 @@ def generate_rows(doc, token_surprisals):
         np_structure_string = " + ".join(pos_list)
 
         argument = "non-arg"
-        if head.dep_ == "nsubj": argument = "subject"
+        if head.dep_ == "nsubj": argument = "sbj"
         elif head.dep_ == "obj": argument = "oth_object"
-        elif head.dep_ == "dobj": argument = "dir_object"
+        elif head.dep_ == "dobj": argument = "obj"
         elif head.dep_ == "iobj": argument = "ind_object"
         elif head.dep_ == "pobj": argument = "prep_object"
 
         number = "unmarked"
-        if "Number=Sing" in str(head.morph): number = "singular"
-        elif "Number=Plur" in str(head.morph): number = "plural"
+        if "Number=Sing" in str(head.morph): number = "sing"
+        elif "Number=Plur" in str(head.morph): number = "plur"
 
         definiteness = "unmarked"
         has_poss = any(tok.dep_ == 'poss' for tok in np)
 
         if has_poss:
-            definiteness = "definite"
+            definiteness = "def"
         elif det:
-            if "Definite=Def" in str(det.morph) or "Poss=Yes" in str(det.morph): definiteness = "definite"
-            if "Definite=Ind" in str(det.morph): definiteness = "indefinite"
-        elif head.pos_ in ("PROPN", "PRON"): definiteness = "definite"
-        elif head.pos_ == "NOUN": definiteness = "indefinite"
+            if "Definite=Def" in str(det.morph) or "Poss=Yes" in str(det.morph): definiteness = "def"
+            if "Definite=Ind" in str(det.morph): definiteness = "indef"
+        elif head.pos_ in ("PROPN", "PRON"): definiteness = "def"
+        elif head.pos_ == "NOUN": definiteness = "indef"
 
 # Find out how to get Head and Det surprisals
         np_surprisals = [token_surprisals.get(tok.i) for tok in np if token_surprisals.get(tok.i) is not None]
@@ -541,18 +553,17 @@ def generate_rows(doc, token_surprisals):
 
         np_data = {
 
-            'Phrase_Token' : np.text,
-            'Phrase_Surprisal' : mean_s,
-            'Is_NP' : True,
-            'NP_Is_Bare_NP' : False if det else True,
-            "NP_Structure" : np_structure_string,
-            "Is_Head_Noun" : False,
-            'NP_Head_Lemma' : head.lemma_, 'NP_Det_Lemma' : det.lemma_ if det else None,
-            'NP_Head_POS' : head.pos_, 'NP_Det_POS' : det.pos_ if det else None,
-            'NP_Head_Dependency' : head.dep_, 'NP_Det_Dependency' : det.dep_ if det else None,
-            'NP_Head_Text' : head.text, 'NP_Det_Text' : det.text if det else None,
-            'NP_Sum_Surprisal' : sum_s, 'NP_Mean_Surprisal' : mean_s, 
-            'NP_Argument' : argument, 'NP_Number' : number, 'NP_Definiteness' : definiteness,
+            'phr_tok' : np.text,
+            'surprisal' : mean_s,
+            'is_noun' : True,
+            'is_bare_np' : False if det else True,
+            "np_struct" : np_structure_string,
+            "is_np_head" : False,
+            'head_pos' : head.pos_, 'det_pos' : det.pos_ if det else None,
+            'head_dep' : head.dep_, 'det_dep' : det.dep_ if det else None,
+            'head_text' : head.text, 'det_text' : det.text if det else None,
+            'np_sum_surp' : sum_s, 'np_mean_surp' : mean_s, 
+            'argPos' : argument, 'np_num' : number, 'definiteness' : definiteness,
         }
 
         
@@ -560,7 +571,7 @@ def generate_rows(doc, token_surprisals):
         #Plug Update
         for token in np:
             token_rows[token.i].update(np_data)
-        token_rows[head.i]['Is_Head_Noun'] = True #Marks row if the token is the head noun
+        token_rows[head.i]['is_np_head'] = True #Marks row if the token is the head noun
 
     return token_rows
 
