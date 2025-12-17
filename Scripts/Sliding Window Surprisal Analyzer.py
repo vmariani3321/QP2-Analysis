@@ -179,7 +179,6 @@ def get_window(sentence_tuples, batch_num):
 ############################
 # DATA PROCESSING
 ############################
-
 def XML_tupler(filepath):
     """
     Parses one XML into a list of (text, context) tuples.
@@ -196,45 +195,40 @@ def XML_tupler(filepath):
     except ET.ParseError as e: # Sanity check for invalid XML
         print(f" Parse error {e}. Skipping file.")
         return []
-    
-    if root.find(".//wtext") is not None:
-        modality = "written"
-    elif root.findall (".//stext"):
-        modality = "spoken"
-    else:
-        modality = "unknown"
 
-    for sentence_tag in root.findall(".//s"): # Extracts sentences
-        words = [
-            child.text.strip() # Removes extra spaces
-            for child in sentence_tag
-            if child.tag in ['w', 'c'] and child.text is not None # Removes empty words
-        ]
-        
-        if words:
-            sentence_text = ' '.join(words).strip() # Joins words into a sentence with only one space between words and removes empty sentences
-            sentence_counter += 1
+    for modality, tag_type in [("written", ".//p"), ("spoken", ".//u")]: # Filters for written modality. Add ("spoken", ".//u") to also get spoken
+            for element in root.findall(tag_type):
+                for sentence_tag in element.findall(".//s"): # Extracts sentences
+                    words = [
+                        child.text.strip() # Removes extra spaces
+                        for child in sentence_tag
+                        if child.tag in ['w', 'c'] and child.text is not None # Removes empty words
+                    ]
+                    
+                    if words:
+                        sentence_text = ' '.join(words).strip() # Joins words into a sentence with only one space between words and removes empty sentences
+                        sentence_counter += 1
 
-            s_n = sentence_tag.get('n') # Get sentence number from XML
+                        s_n = sentence_tag.get('n') # Get sentence number from XML
 
-            if s_n:
-                if s_n.isdigit():
-                    sent_num = f"{int(s_n):04d}"
-                else:
-                    sent_num = s_n
-            else: 
-                sent_num = "xxxx"
+                        if s_n:
+                            if s_n.isdigit():
+                                sent_num = f"{int(s_n):04d}"
+                            else:
+                                sent_num = s_n
+                        else: 
+                            sent_num = "xxxx"
 
-            BNCID = f"{filename_no_ext}_{sent_num}"  # BNCID = BNC ID number, used for citations
-            consecutive_ID = f"{filename_no_ext}_{sentence_counter:04d}" # Used in case BNC ID is not proper, mainly for sorting in R
+                        BNCID = f"{filename_no_ext}_{sent_num}"  # BNCID = BNC ID number, used for citations
+                        consecutive_ID = f"{filename_no_ext}_{sentence_counter}" # Used in case BNC ID is not proper, mainly for sorting in R
 
-            metadata = {
-                "BNC_ID" : BNCID,
-                "consecutive_ID" : consecutive_ID,
-                "filename" : base_filename,
-                "modality" : modality
-            }
-            sentence_tuples.append((sentence_text, metadata))
+                        metadata = {
+                            "BNC_ID" : BNCID,
+                            "consecutive_ID" : consecutive_ID,
+                            "filename" : base_filename,
+                            "modality" : modality
+                        }
+                        sentence_tuples.append((sentence_text, metadata))
 
     return sentence_tuples
 
