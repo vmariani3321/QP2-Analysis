@@ -470,7 +470,7 @@ def generate_rows(doc, token_surprisals):
 
     sentence_metadata = {
         "bnc_id" : doc._.sentence_metadata["BNC_ID"],
-        "consecutive_id ": doc._.sentence_metadata["consecutive_ID"],
+        "sentence_id ": doc._.sentence_metadata["consecutive_ID"],
         "filename": doc._.sentence_metadata["filename"],
         "modality": doc._.sentence_metadata["modality"],
         "s_text": doc.text,
@@ -486,7 +486,7 @@ def generate_rows(doc, token_surprisals):
         's_coord_conj_count': coord_conj_count,
         "s_rel_clause_count": relative_clause_count,
         "s_adv_clause_count": adv_clause_count,
-        "clausal_comp_count": clausal_comp_count,
+        "s_clausal_comp_count": clausal_comp_count,
         "s_pp_cnt": prep_phrase_count
     }
 
