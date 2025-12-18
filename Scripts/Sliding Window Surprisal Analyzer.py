@@ -41,7 +41,7 @@ SPACY_BATCH = 64
 OVERWRITE = 0
 
 INPUT_DIR = "D:/BNC Full Data/BNCFiles/Full BNC1994/download/Texts" # The directory of the input XML files
-OUTPUT_DIR = "D:/BNC Full Data/12-17 Run/CSV" # The directory of the output CSV files
+OUTPUT_DIR = "D:/BNC Full Data/12-18 Run/CSV" # The directory of the output CSV files
 
 SPACY_MOD = "en_core_web_trf" # The SpaCy model to use
 TRANSFORMER_MOD = "meta-llama/Llama-3.2-1B" # The transformer model to use
@@ -474,19 +474,19 @@ def generate_rows(doc, token_surprisals):
         "filename": doc._.sentence_metadata["filename"],
         "modality": doc._.sentence_metadata["modality"],
         "s_text": doc.text,
-        "s_verb_cnt": verb_count,
-        "s_aux_cnt": aux_count,
-        "s_aux_cnt": subject_count,
-        's_tot_obj_cnt': total_obj_count,
-        's_dir_obj_cnt': dir_obj_count,
-        's_ind_obj_cnt': ind_obj_count,
+        "s_verb_count": verb_count,
+        "s_aux_count": aux_count,
+        "s_sbj_count": subject_count,
+        's_tot_obj_count': total_obj_count,
+        's_dir_obj_count': dir_obj_count,
+        's_ind_obj_count': ind_obj_count,
         "s_trans": transitive,
-        "s_comma_cnt": commas,
-        "s_sub_conj_cnt": sub_conj_count,
-        's_coord_conj_cnt': coord_conj_count,
-        "s_rel_clause_cnt": relative_clause_count,
-        "s_adv_clause_cnt": adv_clause_count,
-        "clausal_comp_cnt": clausal_comp_count,
+        "s_comma_count": commas,
+        "s_sub_conj_count": sub_conj_count,
+        's_coord_conj_count': coord_conj_count,
+        "s_rel_clause_count": relative_clause_count,
+        "s_adv_clause_count": adv_clause_count,
+        "clausal_comp_count": clausal_comp_count,
         "s_pp_cnt": prep_phrase_count
     }
 
