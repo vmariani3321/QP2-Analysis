@@ -7621,13 +7621,13 @@ The following object is masked from 'package:purrr':
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># Reading the data from parquets; see end of file for original read-in code. </span>
 
-<span class="n">df_full</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read_parquet</span><span class="p">(</span><span class="s">"Data/Full Data.parquet"</span><span class="p">)</span>
-<span class="n">df_sent</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read_parquet</span><span class="p">(</span><span class="s">"Data/Filtered Sentences.parquet"</span><span class="p">)</span>
+<span class="c1"># df_full &lt;- read_parquet("Data/Full Data.parquet")</span>
+<span class="c1"># df_sent &lt;- read_parquet("Data/Filtered Sentences.parquet")</span>
 <span class="n">df_nps</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read_parquet</span><span class="p">(</span><span class="s">"Data/NPs Only.parquet"</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -8120,7 +8120,7 @@ The following object is masked from 'package:purrr':
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># NPs by start position and definiteness: </span>
@@ -8134,7 +8134,8 @@ The following object is masked from 'package:purrr':
 <span class="w">        </span><span class="n">names_from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np_idx</span><span class="p">,</span>
 <span class="w">        </span><span class="n">values_from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">prop</span><span class="p">),</span><span class="w"> </span>
 <span class="w">        </span><span class="n">names_vary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"slowest"</span>
-<span class="w">    </span><span class="p">)</span><span class="w"> </span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">    </span><span class="nf">print</span><span class="p">(</span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">Inf</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">Inf</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8146,18 +8147,21 @@ The following object is masked from 'package:purrr':
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
-<table class="dataframe">
-<caption>A tibble: 2 × 29</caption>
-<thead>
-<tr><th scope="col">definiteness</th><th scope="col">n_0</th><th scope="col">prop_0</th><th scope="col">n_2</th><th scope="col">prop_2</th><th scope="col">n_3</th><th scope="col">prop_3</th><th scope="col">n_4</th><th scope="col">prop_4</th><th scope="col">n_5</th><th scope="col">⋯</th><th scope="col">n_10</th><th scope="col">prop_10</th><th scope="col">n_11</th><th scope="col">prop_11</th><th scope="col">n_12</th><th scope="col">prop_12</th><th scope="col">n_13</th><th scope="col">prop_13</th><th scope="col">n_16</th><th scope="col">prop_16</th></tr>
-<tr><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">⋯</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-<tr><td>indef</td><td> 5672</td><td>0.1690158</td><td> 6789</td><td>0.3455138</td><td>3895</td><td>0.4326816</td><td>1505</td><td>0.4831461</td><td>598</td><td>⋯</td><td>4</td><td>0.3636364</td><td>1</td><td>0.5</td><td> 1</td><td> 1</td><td>NA</td><td>NA</td><td> 1</td><td> 1</td></tr>
-<tr><td>def  </td><td>27887</td><td>0.8309842</td><td>12860</td><td>0.6544862</td><td>5107</td><td>0.5673184</td><td>1610</td><td>0.5168539</td><td>551</td><td>⋯</td><td>7</td><td>0.6363636</td><td>1</td><td>0.5</td><td>NA</td><td>NA</td><td> 1</td><td> 1</td><td>NA</td><td>NA</td></tr>
-</tbody>
-</table>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre><span class="ansi-black-intense-fg"># A tibble: 2 × 29</span>
+  definiteness   n_0 prop_0   n_2 prop_2   n_3 prop_3   n_4 prop_4   n_5 prop_5
+  <span class="ansi-black-intense-fg">&lt;fct&gt;</span>        <span class="ansi-black-intense-fg">&lt;int&gt;</span>  <span class="ansi-black-intense-fg">&lt;dbl&gt;</span> <span class="ansi-black-intense-fg">&lt;int&gt;</span>  <span class="ansi-black-intense-fg">&lt;dbl&gt;</span> <span class="ansi-black-intense-fg">&lt;int&gt;</span>  <span class="ansi-black-intense-fg">&lt;dbl&gt;</span> <span class="ansi-black-intense-fg">&lt;int&gt;</span>  <span class="ansi-black-intense-fg">&lt;dbl&gt;</span> <span class="ansi-black-intense-fg">&lt;int&gt;</span>  <span class="ansi-black-intense-fg">&lt;dbl&gt;</span>
+<span class="ansi-black-intense-fg">1</span> indef         <span class="ansi-underline">5</span>672  0.169  <span class="ansi-underline">6</span>789  0.346  <span class="ansi-underline">3</span>895  0.433  <span class="ansi-underline">1</span>505  0.483   598  0.520
+<span class="ansi-black-intense-fg">2</span> def          <span class="ansi-underline">2</span><span class="ansi-underline">7</span>887  0.831 <span class="ansi-underline">1</span><span class="ansi-underline">2</span>860  0.654  <span class="ansi-underline">5</span>107  0.567  <span class="ansi-underline">1</span>610  0.517   551  0.480
+    n_6 prop_6   n_7 prop_7   n_8 prop_8   n_9 prop_9  n_10 prop_10  n_11
+  <span class="ansi-black-intense-fg">&lt;int&gt;</span>  <span class="ansi-black-intense-fg">&lt;dbl&gt;</span> <span class="ansi-black-intense-fg">&lt;int&gt;</span>  <span class="ansi-black-intense-fg">&lt;dbl&gt;</span> <span class="ansi-black-intense-fg">&lt;int&gt;</span>  <span class="ansi-black-intense-fg">&lt;dbl&gt;</span> <span class="ansi-black-intense-fg">&lt;int&gt;</span>  <span class="ansi-black-intense-fg">&lt;dbl&gt;</span> <span class="ansi-black-intense-fg">&lt;int&gt;</span>   <span class="ansi-black-intense-fg">&lt;dbl&gt;</span> <span class="ansi-black-intense-fg">&lt;int&gt;</span>
+<span class="ansi-black-intense-fg">1</span>   217  0.528    74    0.5    22  0.423     6  0.353     4   0.364     1
+<span class="ansi-black-intense-fg">2</span>   194  0.472    74    0.5    30  0.577    11  0.647     7   0.636     1
+  prop_11  n_12 prop_12  n_13 prop_13  n_16 prop_16
+    <span class="ansi-black-intense-fg">&lt;dbl&gt;</span> <span class="ansi-black-intense-fg">&lt;int&gt;</span>   <span class="ansi-black-intense-fg">&lt;dbl&gt;</span> <span class="ansi-black-intense-fg">&lt;int&gt;</span>   <span class="ansi-black-intense-fg">&lt;dbl&gt;</span> <span class="ansi-black-intense-fg">&lt;int&gt;</span>   <span class="ansi-black-intense-fg">&lt;dbl&gt;</span>
+<span class="ansi-black-intense-fg">1</span>     0.5     1       1    <span class="ansi-red-fg">NA</span>      <span class="ansi-red-fg">NA</span>     1       1
+<span class="ansi-black-intense-fg">2</span>     0.5    <span class="ansi-red-fg">NA</span>      <span class="ansi-red-fg">NA</span>     1       1    <span class="ansi-red-fg">NA</span>      <span class="ansi-red-fg">NA</span>
+</pre>
 </div>
 </div>
 </div>
@@ -8411,7 +8415,7 @@ Model matrix is rank deficient. Parameters `argPossbj:np_idx,
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># Plot of argPos, definiteness, and surprisal</span>
